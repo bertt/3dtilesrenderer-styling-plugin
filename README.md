@@ -2,6 +2,8 @@
 
 A plugin for 3DTilesRendererJS that applies Cesium 3D Tiles Styling Specification color conditions to 3D tile features. It reads feature properties from GLB tiles via EXT_structural_metadata, evaluates color conditions based on property values, and applies per-feature vertex colors using Three.js materials.
 
+Original styling specs see https://github.com/CesiumGS/3d-tiles/tree/main/specification/Styling
+
 ## Architecture
 
 The plugin implements the TilesRenderer plugin pattern and intercepts the `load-model` event to style GLB tiles as they are loaded.
