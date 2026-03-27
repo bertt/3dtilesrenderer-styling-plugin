@@ -10,7 +10,27 @@
 
 ## Learnings
 
-<!-- Append new learnings below. -->
+### Height-Based Color Styling Integration (2026-03-27)
+
+**How the plugin was wired in:**
+- Added `import { CesiumStylingPlugin } from '../../src/CesiumStylingPlugin.js'` directly (relative path, no importmap entry needed)
+- Registered after `ImplicitTilingPlugin` and `GLTFExtensionsPlugin` in `initTiles()`
+- `THREE` is passed as a constructor option (`{ THREE, style: {...} }`) to avoid the duplicate three.js module warning that occurs when the plugin independently imports three
+
+**Color scheme applied (Sibbe BAG buildings):**
+- `#9ecae1` — light blue, ≤ 6 m (single-storey / low buildings)
+- `#4292c6` — medium blue, ≤ 9 m (2-storey residential)
+- `#f7f7f7` — near-white, ≤ 12 m (3-storey buildings)
+- `#ef3b2c` — red-orange, ≤ 18 m (4-storey / taller residential)
+- `#99000d` — deep red, > 18 m (tall buildings / commercial)
+
+**Height breakpoints:** 6 m, 9 m, 12 m, 18 m — selected for Dutch BAG building typology in Sibbe.
+
+**Legend panel added:** Absolute-positioned top-right `#legend` div with color swatches; CSS uses `.legend-row` / `.legend-swatch` classes.
+
+**Existing functionality preserved:** Click-to-inspect (meshFeatures / structuralMetadata), yellow selection highlight shader, DRACOLoader/KTX2Loader setup — all untouched.
+
+
 
 ### MapLibre + Three.js + 3DTilesRenderer Integration (2026-03-27)
 

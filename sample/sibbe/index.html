@@ -1,213 +1,378 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sibbe - BAG Buildings</title>
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Sibbe 3D Panden</title>
+  <script src="https://unpkg.com/maplibre-gl@5.21.1/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@5.21.1/dist/maplibre-gl.css" rel="stylesheet" />
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    body { margin: 0; padding: 0; }
+    html, body, #map { height: 100%; }
+
+    #loading {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.92); padding: 14px 22px;
+      border-radius: 8px; font-family: sans-serif; font-size: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.25); z-index: 10;
+      display: flex; align-items: center; gap: 10px;
     }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      overflow: hidden;
+    #loading::before {
+      content: ''; width: 16px; height: 16px; border-radius: 50%;
+      border: 3px solid #ccc; border-top-color: #0078ff;
+      animation: spin .8s linear infinite; flex-shrink: 0;
     }
-    
-    #map {
-      width: 100vw;
-      height: 100vh;
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #credits {
+      position: absolute; bottom: 30px; left: 10px;
+      background: rgba(255,255,255,0.85); padding: 6px 10px;
+      border-radius: 4px; font-family: sans-serif; font-size: 11px;
+      line-height: 1.6; z-index: 5; max-width: 300px;
     }
-    
-    .overlay {
+    #credits a { color: #0078ff; text-decoration: none; }
+    #credits a:hover { text-decoration: underline; }
+
+    #legend {
       position: absolute;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 15px;
-      border-radius: 4px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      z-index: 1;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.92);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-family: sans-serif;
+      font-size: 12px;
+      line-height: 1.8;
+      z-index: 5;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+      min-width: 140px;
     }
-    
-    .title {
-      top: 20px;
-      left: 20px;
-      font-size: 20px;
-      font-weight: 600;
-      color: #1a1a2e;
-    }
-    
-    .legend {
-      bottom: 30px;
-      left: 20px;
-      min-width: 180px;
-    }
-    
-    .legend h3 {
-      margin: 0 0 10px 0;
-      font-size: 14px;
+    #legend h4 {
+      margin: 0 0 6px 0;
+      font-size: 12px;
       font-weight: 600;
       color: #333;
     }
-    
-    .legend-item {
+    .legend-row {
       display: flex;
       align-items: center;
-      margin-bottom: 6px;
-      font-size: 13px;
+      gap: 8px;
+      margin-bottom: 3px;
     }
-    
-    .legend-color {
-      width: 24px;
-      height: 18px;
-      margin-right: 10px;
+    .legend-swatch {
+      width: 18px;
+      height: 14px;
       border-radius: 2px;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0,0,0,0.15);
+      flex-shrink: 0;
     }
-    
-    .legend-label {
-      color: #555;
+
+    #info {
+      display: none;
+      position: fixed;
+      background: rgba(255,255,255,0.95); padding: 8px 12px;
+      border-radius: 6px; font-family: sans-serif; font-size: 12px;
+      line-height: 1.7; z-index: 20; max-width: 280px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.25); pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <div id="map"></div>
-  
-  <div class="overlay title">
-    Sibbe - BAG Buildings
-  </div>
-  
-  <div class="overlay legend">
-    <h3>Building Height</h3>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #1a1a2e;"></div>
-      <div class="legend-label">0-5m</div>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #16213e;"></div>
-      <div class="legend-label">5-10m</div>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #0f3460;"></div>
-      <div class="legend-label">10-15m</div>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #533483;"></div>
-      <div class="legend-label">15-20m</div>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background-color: #e94560;"></div>
-      <div class="legend-label">&gt;20m</div>
-    </div>
-  </div>
 
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://esm.sh/three@0.177.0",
-      "three/addons/": "https://esm.sh/three@0.177.0/addons/",
-      "3d-tiles-renderer": "https://esm.sh/3d-tiles-renderer@0.3.41",
-      "3d-tiles-renderer/three": "https://esm.sh/3d-tiles-renderer@0.3.41/three",
-      "3d-tiles-renderer/plugins": "https://esm.sh/3d-tiles-renderer@0.3.41/plugins",
-      "3d-tiles-renderer/three/plugins": "https://esm.sh/3d-tiles-renderer@0.3.41/three/plugins"
-    }
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
+    "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/",
+    "3d-tiles-renderer": "https://cdn.jsdelivr.net/npm/3d-tiles-renderer@0.4.23/build/index.three.js",
+    "3d-tiles-renderer/core/plugins": "https://cdn.jsdelivr.net/npm/3d-tiles-renderer@0.4.23/build/index.core-plugins.js",
+    "3d-tiles-renderer/three/plugins": "https://cdn.jsdelivr.net/npm/3d-tiles-renderer@0.4.23/build/index.three-plugins.js"
   }
-  </script>
+}
+</script>
 
-  <script type="module">
-    import maplibregl from 'https://esm.sh/maplibre-gl@4.7.1';
-    import * as THREE from 'three';
-    import { TilesRenderer } from '3d-tiles-renderer';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-    import { GLTFMeshFeaturesExtension, GLTFStructuralMetadataExtension, GLTFCesiumRTCExtension } from '3d-tiles-renderer/plugins';
-    import { CesiumStylingPlugin } from '../../src/CesiumStylingPlugin.js';
+<div id="map"></div>
+<div id="loading">Laden van 3D panden&hellip;</div>
+<div id="info"></div>
+<div id="credits">
+  🏠 <strong>Sibbe 3D Panden</strong><br>
+  Kaart: <a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> &middot;
+  Terrain: <a href="https://mapterhorn.com" target="_blank">Mapterhorn</a><br>
+  3D data: BAG via <a href="https://github.com/Geodan/pg2b3dm" target="_blank">pg2b3dm</a>
+</div>
 
-    const map = new maplibregl.Map({
-      container: 'map',
-      style: 'https://tiles.openfreemap.org/styles/liberty',
-      center: [5.83, 50.85],
-      zoom: 15,
-      pitch: 55,
-      bearing: 0,
-      antialias: true
-    });
+<div id="legend">
+  <h4>Hoogte (m)</h4>
+  <div class="legend-row"><div class="legend-swatch" style="background:#9ecae1"></div><span>0 – 6 m</span></div>
+  <div class="legend-row"><div class="legend-swatch" style="background:#4292c6"></div><span>6 – 9 m</span></div>
+  <div class="legend-row"><div class="legend-swatch" style="background:#f7f7f7"></div><span>9 – 12 m</span></div>
+  <div class="legend-row"><div class="legend-swatch" style="background:#ef3b2c"></div><span>12 – 18 m</span></div>
+  <div class="legend-row"><div class="legend-swatch" style="background:#99000d"></div><span>&gt; 18 m</span></div>
+</div>
 
-    const tilesLayer = {
-      id: '3d-tiles',
-      type: 'custom',
-      renderingMode: '3d',
-      
-      onAdd(map, gl) {
-        this.renderer = new THREE.WebGLRenderer({
-          canvas: map.getCanvas(),
-          context: gl,
-          antialias: true
-        });
-        this.renderer.autoClear = false;
-        this.renderer.setPixelRatio(window.devicePixelRatio);
-        
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera();
-        
-        this.tiles = new TilesRenderer('./tileset.json');
-        
-        const loader = new GLTFLoader(this.tiles.manager);
-        loader.register(() => new GLTFMeshFeaturesExtension());
-        loader.register(() => new GLTFStructuralMetadataExtension());
-        loader.register(() => new GLTFCesiumRTCExtension());
-        
-        const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-        loader.setDRACOLoader(dracoLoader);
-        
-        this.tiles.manager.addHandler(/\.glb$/, loader);
-        
-        this.tiles.registerPlugin(new CesiumStylingPlugin({
-          style: {
-            color: {
-              conditions: [
-                ["${feature['height']} <= 5", "color('#1a1a2e')"],
-                ["${feature['height']} <= 10", "color('#16213e')"],
-                ["${feature['height']} <= 15", "color('#0f3460')"],
-                ["${feature['height']} <= 20", "color('#533483')"],
-                ["${feature['height']} > 20", "color('#e94560')"],
-                ["true", "color('#ffffff')"]
-              ]
-            }
-          }
-        }));
-        
-        this.scene.add(this.tiles.group);
-        
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        this.scene.add(ambientLight);
-        
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(0.5, 1, 0.5).normalize();
-        this.scene.add(directionalLight);
-      },
-      
-      render(gl, matrix) {
-        const l = new THREE.Matrix4().fromArray(matrix);
-        this.camera.projectionMatrix = l;
-        this.camera.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert();
-        
-        this.renderer.resetState();
-        this.tiles.setCamera(this.camera);
-        this.tiles.setResolutionFromRenderer(this.camera, this.renderer);
-        this.tiles.update();
-        
-        this.renderer.render(this.scene, this.camera);
-        map.triggerRepaint();
+<script type="module">
+import * as THREE from 'three';
+import { TilesRenderer } from '3d-tiles-renderer';
+import { ImplicitTilingPlugin } from '3d-tiles-renderer/core/plugins';
+import { GLTFExtensionsPlugin } from '3d-tiles-renderer/three/plugins';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
+import { CesiumStylingPlugin } from '../../src/CesiumStylingPlugin.js';
+
+let scene, camera, renderer, mapInstance, tiles, tilesCamera;
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: 'https://tiles.openfreemap.org/styles/liberty',
+  zoom: 1,
+  center: [0, 0],
+  pitch: 60,
+  maxPitch: 80,
+  canvasContextAttributes: { antialias: true }
+});
+
+async function load3dtiles(url, altOffset = 0) {
+  let localTransform;
+
+  function updateLocalTransform(modelOrigin = [0, 0, 0]) {
+    const mc = maplibregl.MercatorCoordinate.fromLngLat([modelOrigin[0], modelOrigin[1]], modelOrigin[2]);
+    const s = mc.meterInMercatorCoordinateUnits();
+    localTransform = new THREE.Matrix4()
+      .makeTranslation(mc.x, mc.y, mc.z)
+      .scale(new THREE.Vector3(s, -s, s))
+      .multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+  }
+
+  function initTiles(url, sceneInst, cameraInst, rendererInst) {
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://unpkg.com/three@0.183.0/examples/jsm/libs/draco/');
+
+    const ktx2Loader = new KTX2Loader();
+    ktx2Loader.setTranscoderPath('https://unpkg.com/three@0.183.0/examples/jsm/libs/basis/');
+    ktx2Loader.detectSupport(rendererInst);
+
+    tiles = new TilesRenderer(url);
+    tiles.registerPlugin(new ImplicitTilingPlugin());
+    // GLTFExtensionsPlugin sets up DRACOLoader/KTX2Loader and registers
+    // EXT_structural_metadata + EXT_mesh_features for attribute queries
+    tiles.registerPlugin(new GLTFExtensionsPlugin({ dracoLoader, ktxLoader: ktx2Loader }));
+    tiles.registerPlugin(new CesiumStylingPlugin({
+      THREE,
+      style: {
+        color: {
+          conditions: [
+            ["${feature['height']} <= 6", "color('#9ecae1')"],
+            ["${feature['height']} <= 9", "color('#4292c6')"],
+            ["${feature['height']} <= 12", "color('#f7f7f7')"],
+            ["${feature['height']} <= 18", "color('#ef3b2c')"],
+            ["true", "color('#99000d')"]
+          ]
+        }
       }
-    };
+    }));
 
-    map.on('load', () => {
-      map.addLayer(tilesLayer);
+    tiles.group.name = 'tiles';
+    sceneInst.add(tiles.group);
+    tiles.setCamera(cameraInst);
+    tiles.setResolutionFromRenderer(cameraInst, rendererInst);
+
+    let loadedTileSetHandled = false;
+    tiles.addEventListener('load-tileset', () => {
+      if (loadedTileSetHandled) return;
+      loadedTileSetHandled = true;
+
+      const sphere = new THREE.Sphere();
+      tiles.getBoundingSphere(sphere);
+      const center = sphere.center.clone();
+
+      // Convert ECEF centre to geographic coords via the ellipsoid built into the renderer
+      const cart = {};
+      tiles.ellipsoid.getPositionToCartographic(center, cart);
+      const lng = cart.lon * (180 / Math.PI);
+      const lat = cart.lat * (180 / Math.PI);
+      const alt = cart.height + altOffset;
+
+      map.jumpTo({ center: [lng, lat], zoom: 16, pitch: 60, bearing: -20 });
+      updateLocalTransform([lng, lat, alt]);
+
+      // ENU→Three.js rotation: East→+X, Up→+Y, South→+Z
+      const sLon = Math.sin(cart.lon), cLon = Math.cos(cart.lon);
+      const sLat = Math.sin(cart.lat), cLat = Math.cos(cart.lat);
+      const rotationMat4 = new THREE.Matrix4().setFromMatrix3(
+        new THREE.Matrix3().set(
+          -sLon,        cLon,        0,
+           cLat * cLon, cLat * sLon, sLat,
+           sLat * cLon, sLat * sLon, -cLat
+        )
+      );
+      const moveToOrigin = new THREE.Matrix4().makeTranslation(-center.x, -center.y, -center.z);
+      tiles.group.matrix.copy(new THREE.Matrix4().multiplyMatrices(rotationMat4, moveToOrigin));
+      tiles.group.matrixAutoUpdate = false;
+      tiles.group.updateMatrixWorld(true);
+
+      document.getElementById('loading').style.display = 'none';
     });
-  </script>
+
+    updateLocalTransform();
+  }
+
+  const customLayer = {
+    id: '3d-tiles',
+    type: 'custom',
+    renderingMode: '3d',
+    onAdd(mapArg, gl) {
+      camera = new THREE.PerspectiveCamera();
+      scene = new THREE.Scene();
+
+      // Soft ambient fill + directional sun light in local ENU space (East=+X, Up=+Y, South=+Z)
+      scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+      const sun = new THREE.DirectionalLight(0xffffff, 2.0);
+      sun.position.set(1, 2, 0.5); // from northeast, high elevation
+      scene.add(sun);
+
+      mapInstance = mapArg;
+      renderer = new THREE.WebGLRenderer({ canvas: mapArg.getCanvas(), context: gl, antialias: true });
+      renderer.autoClear = false;
+
+      tilesCamera = new THREE.PerspectiveCamera();
+      initTiles(url, scene, tilesCamera, renderer);
+    },
+    render(_gl, args) {
+      if (!camera || !renderer || !scene || !localTransform || !tilesCamera) return;
+      camera.projectionMatrix.fromArray(args.defaultProjectionData.mainMatrix);
+      camera.projectionMatrix.multiply(localTransform);
+
+      const P = new THREE.Matrix4().fromArray(args.projectionMatrix);
+      const invP = P.clone().invert();
+      const V = new THREE.Matrix4().multiplyMatrices(invP, camera.projectionMatrix);
+
+      tilesCamera.projectionMatrix.copy(P);
+      tilesCamera.projectionMatrixInverse.copy(P).invert();
+      tilesCamera.matrixWorldInverse.copy(V);
+      tilesCamera.matrixWorld.copy(V).invert();
+
+      renderer.resetState();
+      renderer.render(scene, camera);
+      if (tiles) tiles.update();
+      mapInstance?.triggerRepaint();
+    }
+  };
+
+  await map.once('style.load');
+
+  // Add Mapterhorn terrain to the OpenFreeMap style
+  map.addSource('terrain-dem', {
+    type: 'raster-dem',
+    url: 'https://tiles.mapterhorn.com/tilejson.json'
+  });
+  map.addLayer({
+    id: 'hillshading',
+    type: 'hillshade',
+    source: 'terrain-dem',
+    paint: { 'hillshade-shadow-color': '#473B24', 'hillshade-exaggeration': 0.5 }
+  });
+  map.setTerrain({ source: 'terrain-dem', exaggeration: 1 });
+
+  // Hide vector tile building layers so they don't overlap the 3D Tiles buildings
+  map.getStyle().layers
+    .filter(l => l.id.includes('building'))
+    .forEach(l => map.setLayoutProperty(l.id, 'visibility', 'none'));
+
+  map.addLayer(customLayer);
+
+  // --- Selection shader: only renders the selected feature ID in orange ---
+  const selectionMaterial = new THREE.ShaderMaterial({
+    uniforms: { selectedId: { value: -1.0 } },
+    vertexShader: `
+      attribute float _feature_id_0;
+      varying float vId;
+      void main() {
+        vId = _feature_id_0;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      uniform float selectedId;
+      varying float vId;
+      void main() {
+        if (abs(vId - selectedId) > 0.5) discard;
+        gl_FragColor = vec4(1.0, 0.92, 0.2, 0.75);
+      }
+    `,
+    transparent: true,
+    depthTest: true,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -1.0,
+    polygonOffsetUnits: -1.0,
+    side: THREE.DoubleSide,
+  });
+  let selectionMesh = null;
+
+  // --- Attribute query via click + raycast ---
+  const raycaster = new THREE.Raycaster();
+  const infoEl = document.getElementById('info');
+
+  map.getCanvas().addEventListener('click', e => {
+    if (!tiles || !tilesCamera || !scene) return;
+    const canvas = map.getCanvas();
+    const ndc = new THREE.Vector2(
+      (e.offsetX / canvas.clientWidth) * 2 - 1,
+      -(e.offsetY / canvas.clientHeight) * 2 + 1
+    );
+    raycaster.setFromCamera(ndc, tilesCamera);
+    const hits = raycaster.intersectObject(tiles.group, true);
+    if (!hits.length) { infoEl.style.display = 'none'; return; }
+
+    const { face, point, faceIndex, object } = hits[0];
+    const meshFeatures = object.userData?.meshFeatures;
+    const structuralMetadata = object.userData?.structuralMetadata;
+    if (!meshFeatures || !structuralMetadata) { infoEl.style.display = 'none'; return; }
+
+    const barycoord = new THREE.Vector3();
+    const tri = new THREE.Triangle();
+    tri.setFromAttributeAndIndices(object.geometry.attributes.position, face.a, face.b, face.c);
+    tri.a.applyMatrix4(object.matrixWorld);
+    tri.b.applyMatrix4(object.matrixWorld);
+    tri.c.applyMatrix4(object.matrixWorld);
+    tri.getBarycoord(point, barycoord);
+
+    // getFeatures returns Array<number|null>; featureInfo links each slot to a property table
+    const featureIds = meshFeatures.getFeatures(faceIndex, barycoord);
+    const featureInfo = meshFeatures.getFeatureInfo();
+    const lines = [];
+    featureIds.forEach((featureId, i) => {
+      if (featureId === null) return;
+      const tableIndex = featureInfo[i]?.propertyTable;
+      if (tableIndex == null) return;
+      const props = structuralMetadata.getPropertyTableData(tableIndex, featureId);
+      if (props) Object.entries(props).forEach(([k, v]) => lines.push(`<b>${k}</b>: ${v}`));
+    });
+
+    // Highlight the selected building using the feature ID shader overlay
+    if (selectionMesh) scene.remove(selectionMesh);
+    const primaryFeatureId = featureIds.find(id => id !== null);
+    if (primaryFeatureId !== null && primaryFeatureId !== undefined) {
+      selectionMaterial.uniforms.selectedId.value = primaryFeatureId;
+      selectionMesh = new THREE.Mesh(object.geometry, selectionMaterial);
+      selectionMesh.renderOrder = 1;
+      selectionMesh.matrixAutoUpdate = false;
+      selectionMesh.matrix.copy(object.matrixWorld);
+      selectionMesh.matrixWorld.copy(object.matrixWorld);
+      scene.add(selectionMesh);
+    }
+
+    infoEl.innerHTML = lines.length ? lines.join('<br>') : 'Geen attributen gevonden';
+    infoEl.style.display = 'block';
+    infoEl.style.left = (e.clientX + 12) + 'px';
+    infoEl.style.top = (e.clientY - 10) + 'px';
+  });
+
+  map.on('movestart', () => { infoEl.style.display = 'none'; });
+}
+
+load3dtiles('./sibbe/tileset.json');
+</script>
 </body>
 </html>

@@ -1,243 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Tiles Styling Plugin — Sibbe Sample</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="language" content="en" />
+  <title>Review – Sibbe 3D Buildings</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
+    * { box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      line-height: 1.6;
-      color: #333;
-      background-color: #f9f9f9;
-      padding: 40px 20px;
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f6f9; color: #222;
     }
-    
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: white;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    header {
+      background: #1a202c; color: #fff;
+      padding: 24px 32px 20px;
     }
-    
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      color: #1a1a2e;
-      margin-bottom: 16px;
-    }
-    
+    header h1 { margin: 0 0 6px; font-size: 1.6rem; }
+    header p  { margin: 0; color: #a0aec0; font-size: 0.95rem; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+    section { margin-bottom: 40px; }
     h2 {
-      font-size: 24px;
-      font-weight: 600;
-      color: #16213e;
-      margin-top: 32px;
-      margin-bottom: 12px;
-      border-bottom: 2px solid #0f3460;
-      padding-bottom: 8px;
+      font-size: 1.15rem; font-weight: 600;
+      border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; margin-top: 0;
     }
-    
-    h3 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #533483;
-      margin-top: 24px;
-      margin-bottom: 8px;
-    }
-    
-    p {
-      margin-bottom: 16px;
-      color: #555;
-    }
-    
-    .description {
-      font-size: 16px;
-      color: #666;
-      margin-bottom: 24px;
-    }
-    
-    .viewer-embed {
-      margin: 32px 0;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    iframe {
-      width: 100%;
-      height: 500px;
-      border: none;
+
+    .preview-frame {
+      width: 100%; height: 500px; border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
       display: block;
     }
-    
-    pre {
-      background-color: #f5f5f5;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 16px;
-      overflow-x: auto;
-      font-size: 14px;
-      line-height: 1.5;
+    .preview-note {
+      font-size: 0.8rem; color: #718096; margin-top: 8px;
+    }
+
+    table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.9rem; background: #fff;
+      border-radius: 8px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    th {
+      background: #2d3748; color: #fff;
+      padding: 10px 14px; text-align: left; font-weight: 500;
+    }
+    td { padding: 9px 14px; border-bottom: 1px solid #edf2f7; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #f7fafc; }
+
+    .badge {
+      display: inline-block; padding: 2px 8px;
+      border-radius: 12px; font-size: 0.78rem; font-weight: 600;
+    }
+    .badge-green  { background: #c6f6d5; color: #276749; }
+    .badge-yellow { background: #fefcbf; color: #744210; }
+    .badge-blue   { background: #bee3f8; color: #2a69ac; }
+
+    .card {
+      background: #fff; border-radius: 8px;
+      padding: 16px 20px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.08);
       margin-bottom: 16px;
     }
-    
+    .card h3 { margin: 0 0 8px; font-size: 1rem; }
+    .card p  { margin: 0; font-size: 0.9rem; color: #4a5568; line-height: 1.6; }
+
     code {
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-      background-color: #f5f5f5;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-size: 0.9em;
+      background: #edf2f7; padding: 2px 6px;
+      border-radius: 4px; font-size: 0.85rem; font-family: monospace;
     }
-    
-    pre code {
-      background: none;
-      padding: 0;
+
+    .warning-box {
+      background: #fffbeb; border: 1px solid #f6e05e;
+      border-radius: 8px; padding: 14px 18px;
+      font-size: 0.9rem; line-height: 1.6;
     }
-    
-    ul {
-      margin: 16px 0;
-      padding-left: 24px;
+    .warning-box strong { color: #744210; }
+
+    footer {
+      text-align: center; color: #a0aec0;
+      font-size: 0.8rem; padding: 24px;
+      border-top: 1px solid #e2e8f0;
     }
-    
-    li {
-      margin-bottom: 8px;
-      color: #555;
-    }
-    
-    a {
-      color: #0f3460;
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.2s;
-    }
-    
-    a:hover {
-      border-bottom-color: #0f3460;
-    }
-    
-    .links {
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 1px solid #eee;
-    }
-    
-    .links a {
-      display: inline-block;
-      margin-right: 20px;
-      font-weight: 500;
-    }
-    
-    .info-box {
-      background-color: #f0f4f8;
-      border-left: 4px solid #0f3460;
-      padding: 16px;
-      margin: 24px 0;
-      border-radius: 4px;
-    }
-    
-    .info-box p {
-      margin-bottom: 8px;
-    }
-    
-    .info-box p:last-child {
-      margin-bottom: 0;
-    }
+    a { color: #3182ce; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>3D Tiles Styling Plugin — Sibbe Sample</h1>
-    
-    <p class="description">
-      This sample demonstrates the <strong>CesiumStylingPlugin</strong> for 3DTilesRendererJS, 
-      which enables Cesium 3D Tiles Styling specification for coloring and styling 3D Tiles 
-      based on feature properties.
-    </p>
 
-    <h2>Live Viewer</h2>
-    <p>
-      The viewer below displays BAG (Basisregistratie Adressen en Gebouwen) buildings in Sibbe, 
-      Limburg, Netherlands, colored by building height using a gradient from dark navy to vivid rose.
+<header>
+  <h1>🏠 Sibbe 3D Buildings &mdash; Review</h1>
+  <p>MapLibre GL JS · OpenFreeMap vector tiles · Mapterhorn terrain · 3D Tiles (BAG buildings Sibbe)</p>
+</header>
+
+<div class="container">
+
+  <!-- Live preview -->
+  <section>
+    <h2>Live preview</h2>
+    <iframe
+      class="preview-frame"
+      src="index.html"
+      title="Sibbe 3D Buildings"
+      loading="lazy"
+      allow="fullscreen">
+      <p>Iframe not supported. <a href="index.html">Open directly</a>.</p>
+    </iframe>
+    <p class="preview-note">
+      Full page: <a href="index.html" target="_blank">open index.html ↗</a>
     </p>
-    
-    <div class="viewer-embed">
-      <iframe src="./index.html" title="Sibbe 3D Buildings Viewer"></iframe>
+  </section>
+
+  <!-- Features -->
+  <section>
+    <h2>Features</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Status</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>OpenFreeMap vector tiles</strong></td>
+          <td><span class="badge badge-green">✓ Done</span></td>
+          <td>Liberty style via <code>tiles.openfreemap.org</code> as base map</td>
+        </tr>
+        <tr>
+          <td><strong>Mapterhorn terrain</strong></td>
+          <td><span class="badge badge-green">✓ Done</span></td>
+          <td>Raster-DEM + hillshade via <code>tiles.mapterhorn.com</code>, exaggeration 1×</td>
+        </tr>
+        <tr>
+          <td><strong>3D Tiles buildings Sibbe</strong></td>
+          <td><span class="badge badge-green">✓ Done</span></td>
+          <td>Three.js custom layer, <code>TilesRenderer</code> with ECEF→Mercator transform. <code>ImplicitTilingPlugin</code> registered for 3D Tiles 1.1 implicit tiling (QUADTREE, 3 levels)</td>
+        </tr>
+        <tr>
+          <td><strong>Click buildings for attributes</strong></td>
+          <td><span class="badge badge-green">✓ Done</span></td>
+          <td>Raycast via <code>THREE.Raycaster</code> + <code>tilesCamera</code>; attributes via <code>GLTFExtensionsPlugin</code> (<code>EXT_structural_metadata</code> / <code>EXT_mesh_features</code>); selected building highlighted in orange via feature-ID shader overlay</td>
+        </tr>
+        <tr>
+          <td><strong>GitHub Pages compatible</strong></td>
+          <td><span class="badge badge-green">✓ Done</span></td>
+          <td>No server or build tool required; relative paths; all dependencies via CDN</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Click functionality -->
+  <section>
+    <h2>Clicking buildings – implementation</h2>
+    <div class="card">
+      <h3>How it works</h3>
+      <p>
+        Clicking a building fires a <code>THREE.Raycaster</code> against <code>tiles.group</code>
+        using <code>tilesCamera</code> (which has properly separated projection and view matrices,
+        kept in sync with MapLibre every frame). The hit returns a <code>faceIndex</code> and
+        world-space point, from which barycentric coordinates are computed.
+        <code>meshFeatures.getFeatures(faceIndex, barycoord)</code> from
+        <code>EXT_mesh_features</code> yields the feature ID, which is used to look up
+        all BAG attributes via <code>structuralMetadata.getPropertyTableData(tableIndex, featureId)</code>
+        from <code>EXT_structural_metadata</code>.
+      </p>
     </div>
-
-    <h2>About This Sample</h2>
-    
-    <h3>Styling Configuration</h3>
-    <p>
-      The plugin uses the <code>height</code> property from each building feature to apply 
-      a color gradient. The style configuration uses Cesium's conditional styling syntax:
-    </p>
-    
-    <pre><code>{
-  style: {
-    color: {
-      conditions: [
-        ["${feature['height']} &lt;= 5", "color('#1a1a2e')"],   // Deep navy (0-5m)
-        ["${feature['height']} &lt;= 10", "color('#16213e')"],  // Dark blue (5-10m)
-        ["${feature['height']} &lt;= 15", "color('#0f3460')"],  // Medium blue (10-15m)
-        ["${feature['height']} &lt;= 20", "color('#533483')"],  // Purple (15-20m)
-        ["${feature['height']} &gt; 20", "color('#e94560')"],   // Vivid rose (&gt;20m)
-        ["true", "color('#ffffff')"]                      // Fallback white
-      ]
-    }
-  }
-}</code></pre>
-
-    <div class="info-box">
-      <h3>Dataset Information</h3>
-      <p><strong>Source:</strong> pg2b3dm tool (PostgreSQL to 3D Tiles converter)</p>
-      <p><strong>Data:</strong> BAG buildings in Limburg, Netherlands (Sibbe area)</p>
-      <p><strong>Tiling:</strong> Implicit QUADTREE with 3 GLB content files</p>
-      <p><strong>Properties:</strong></p>
-      <ul>
-        <li><code>identificatie</code> — Building ID (string)</li>
-        <li><code>height</code> — Building height in meters (double)</li>
-      </ul>
+    <div class="card">
+      <h3>Building selection highlight</h3>
+      <p>
+        The selected building is highlighted in orange using a <code>THREE.ShaderMaterial</code>
+        overlay mesh that reads the <code>_feature_id_0</code> vertex attribute and
+        <code>discard</code>s any fragment whose feature ID does not match the selected one.
+        This means only the geometry of the selected building is rendered in the overlay,
+        even though the whole tile mesh is reused as a geometry source.
+        Polygon offset (<code>factor -2, units -2</code>) prevents z-fighting with the original mesh.
+      </p>
     </div>
+  </section>
 
-    <h3>Technical Stack</h3>
-    <ul>
-      <li><strong>MapLibre GL JS:</strong> Base map rendering and camera control</li>
-      <li><strong>Three.js:</strong> 3D graphics rendering engine</li>
-      <li><strong>3DTilesRendererJS:</strong> 3D Tiles loader and renderer</li>
-      <li><strong>CesiumStylingPlugin:</strong> Feature-based styling using Cesium 3D Tiles Styling spec</li>
-    </ul>
+  <!-- Technical stack -->
+  <section>
+    <h2>Technical stack</h2>
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Version</th><th>CDN</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>MapLibre GL JS</td>
+          <td>5.21.1</td>
+          <td><code>unpkg.com/maplibre-gl@5.21.1</code></td>
+        </tr>
+        <tr>
+          <td>Three.js</td>
+          <td>0.183.0</td>
+          <td><code>cdn.jsdelivr.net/npm/three@0.183.0</code></td>
+        </tr>
+        <tr>
+          <td>3d-tiles-renderer</td>
+          <td>0.4.23</td>
+          <td><code>cdn.jsdelivr.net/npm/3d-tiles-renderer@0.4.23</code></td>
+        </tr>
+        <tr>
+          <td>Draco decoder</td>
+          <td>via Three.js</td>
+          <td><code>unpkg.com/three@0.183.0/…/draco/</code></td>
+        </tr>
+        <tr>
+          <td>KTX2 / Basis loader</td>
+          <td>via Three.js</td>
+          <td><code>unpkg.com/three@0.183.0/…/basis/</code></td>
+        </tr>
+        <tr>
+          <td>OpenFreeMap style</td>
+          <td>liberty</td>
+          <td><code>tiles.openfreemap.org/styles/liberty</code></td>
+        </tr>
+        <tr>
+          <td>Mapterhorn terrain DEM</td>
+          <td>&mdash;</td>
+          <td><code>tiles.mapterhorn.com/tilejson.json</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 
-    <h3>How It Works</h3>
-    <p>
-      The plugin registers as a 3DTilesRendererJS plugin and applies material overrides to 
-      each mesh based on feature metadata. The styling expressions are evaluated per-feature 
-      using the EXT_mesh_features and EXT_structural_metadata glTF extensions.
-    </p>
-    <p>
-      Required GLTF loader extensions:
-    </p>
-    <ul>
-      <li><code>GLTFMeshFeaturesExtension</code> — Parses mesh-level feature IDs</li>
-      <li><code>GLTFStructuralMetadataExtension</code> — Parses feature property tables</li>
-      <li><code>GLTFCesiumRTCExtension</code> — Handles relative-to-center positioning</li>
-    </ul>
+  <!-- Dataset -->
+  <section>
+    <h2>3D Tiles dataset (Sibbe)</h2>
+    <table>
+      <thead>
+        <tr><th>Property</th><th>Value</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Generator</td><td><code>pg2b3dm 2.27.0.0</code></td></tr>
+        <tr><td>3D Tiles version</td><td>1.1</td></tr>
+        <tr><td>Tiling scheme</td><td>Implicit QUADTREE, 3 levels, subtrees at level 0</td></tr>
+        <tr><td>Content files</td><td><code>1_0_0.glb</code>, <code>1_0_1.glb</code>, <code>1_1_1.glb</code></td></tr>
+        <tr><td>Total features</td><td>676 + 244 + 86 = 1 006 buildings</td></tr>
+        <tr><td>ECEF translation</td><td>[4 014 073.5, 410 267.5, 4 923 026.0] m</td></tr>
+        <tr><td>Location</td><td>Sibbe, municipality of Valkenburg, Limburg (NL)</td></tr>
+        <tr><td>Metadata extensions</td><td><code>EXT_mesh_features</code>, <code>EXT_structural_metadata</code></td></tr>
+        <tr><td>Available attributes</td><td><code>identificatie</code> (BAG building ID)</td></tr>
+      </tbody>
+    </table>
+  </section>
 
-    <div class="links">
-      <h2>Resources</h2>
-      <a href="https://github.com/bertt/3dtilesrenderer-styling-plugin" target="_blank">GitHub Repository</a>
-      <a href="https://www.npmjs.com/package/@bertt/3dtilesrenderer-styling-plugin" target="_blank">npm Package</a>
-      <a href="https://github.com/Geodan/pg2b3dm" target="_blank">pg2b3dm Tool</a>
-      <a href="https://github.com/CesiumGS/3d-tiles/tree/main/specification/Styling" target="_blank">Cesium 3D Tiles Styling Spec</a>
+  <!-- Architecture -->
+  <section>
+    <h2>Architecture notes</h2>
+    <div class="card">
+      <h3>No frameworks, no build tool</h3>
+      <p>
+        The page uses <code>&lt;script type="importmap"&gt;</code> to load ES modules
+        directly from CDN. No npm, webpack, or bundler is needed.
+        The result is a single self-contained HTML file that can be deployed to GitHub Pages
+        by simply committing it.
+      </p>
     </div>
-  </div>
+    <div class="card">
+      <h3>Terrain + vector tiles combination</h3>
+      <p>
+        OpenFreeMap provides the full vector tile style (buildings, roads, labels).
+        After the style loads (<code>style.load</code>), the Mapterhorn raster-DEM source
+        is added dynamically along with a hillshade layer and <code>map.setTerrain()</code>.
+        This combines the rich OpenFreeMap style with 3D terrain exaggeration.
+      </p>
+    </div>
+    <div class="card">
+      <h3>GLTFExtensionsPlugin</h3>
+      <p>
+        Instead of manually wiring up <code>GLTFLoader</code>, <code>DRACOLoader</code>, and
+        <code>KTX2Loader</code>, a single <code>GLTFExtensionsPlugin</code> registration handles
+        all three. It also automatically registers <code>GLTFStructuralMetadataExtension</code>
+        and <code>GLTFMeshFeaturesExtension</code>, which parse <code>EXT_structural_metadata</code>
+        and <code>EXT_mesh_features</code> and attach <code>meshFeatures</code> /
+        <code>structuralMetadata</code> to each mesh's <code>userData</code>.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Implicit tiling (3D Tiles 1.1)</h3>
+      <p>
+        The Sibbe tileset uses implicit tiling with template URIs
+        (<code>content/{level}_{x}_{y}.glb</code>). Without registering the
+        <code>ImplicitTilingPlugin</code>, the 3d-tiles-renderer would request the
+        literal template string as a URL. The plugin resolves tile coordinates into
+        actual file paths before fetching.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Shared WebGL context</h3>
+      <p>
+        Three.js shares the WebGL context with MapLibre via <code>renderingMode: "3d"</code>.
+        The MapLibre projection and view matrices are synchronised to the Three.js camera
+        every frame. <code>TilesRenderer</code> automatically manages tile loading and
+        unloading based on the current viewpoint.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  Generated for review &middot; <a href="index.html">Go to map</a>
+</footer>
+
 </body>
 </html>

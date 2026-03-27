@@ -45,4 +45,29 @@
 - Use regex patterns to extract color components
 - Map to THREE.Color (0-1 range, not 0-255)
 
+### 2026-03-28: Rewrote CesiumStylingPlugin for 3d-tiles-renderer@0.4.23
+
+**Correct Metadata API (0.4.23):**
+- `scene.userData.structuralMetadata` does NOT exist at scene level in 0.4.23
+- Metadata is attached to each **mesh** via `mesh.userData.meshFeatures` and `mesh.userData.structuralMetadata`
+- Retrieve property table index: `meshFeatures.getFeatureInfo()[0]?.propertyTable`
+- Retrieve all properties for a feature: `structuralMetadata.getPropertyTableData(tableIndex, featureId)`
+- Returns a plain object like `{ identificatie: '0503100000017823', height: 7.2 }`
+- Feature ID vertex attribute is **lowercase** in 0.4.23: `_feature_id_0` (with `_FEATURE_ID_0` as fallback)
+
+**THREE Injection Pattern:**
+- Do NOT do `import * as THREE from 'three'` at module level — causes "Multiple instances of Three.js" warning
+- Accept `THREE` as constructor option: `new CesiumStylingPlugin({ THREE, style })`
+- Fallback: `async _getThree()` does a dynamic `import('three')` if not supplied
+- Store as `this._THREE` and use throughout the class
+
+**Color Lookup Table Optimization:**
+- Do NOT call `getPropertyTableData` once per vertex (N vertices × M features = wasteful)
+- Instead: collect unique feature IDs in a `Set`, call metadata once per unique ID, store in a `Map`
+- Then per-vertex loop just reads from the `Map` — O(unique features) metadata calls instead of O(vertices)
+
+**applyToTiles() Method:**
+- Traverses `this.tiles.group` and re-applies `_styleMesh` to all meshes
+- Used for runtime style updates after changing `plugin.style`
+
 <!-- Append new learnings below. -->
