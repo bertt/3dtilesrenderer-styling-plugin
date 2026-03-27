@@ -40,6 +40,8 @@ https://bertt.github.io/3dtilesrenderer-styling-plugin/sample/sibbe/
 npm install @bertt/3dtilesrenderer-styling-plugin
 ```
 
+https://www.npmjs.com/package/@bertt/3dtilesrenderer-styling-plugin
+
 Requires Three.js and 3d-tiles-renderer as peer dependencies.
 
 ## Usage
