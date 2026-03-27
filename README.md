@@ -23,6 +23,15 @@ The plugin processes each tile independently. For every mesh in the loaded GLB:
 4. It creates per-vertex colors in a Float32Array
 5. It sets the vertex color attribute and enables `vertexColors` on the material
 
+## Demo
+
+Color buildings by height
+
+https://bertt.github.io/3dtilesrenderer-styling-plugin/sample/sibbe/
+
+<img width="1279" height="818" alt="image" src="https://github.com/user-attachments/assets/ec87a2a1-9735-42e1-8672-5982110440ad" />
+
+
 ## Installation
 
 ```bash
