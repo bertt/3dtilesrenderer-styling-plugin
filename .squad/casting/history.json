@@ -1,0 +1,21 @@
+{
+  "universe_usage_history": [
+    {
+      "universe": "The Matrix",
+      "assignment_id": "3dtilesrenderer-styling-plugin-001",
+      "used_at": "2026-03-27T19:38:35.747Z"
+    }
+  ],
+  "assignment_cast_snapshots": {
+    "3dtilesrenderer-styling-plugin-001": {
+      "universe": "The Matrix",
+      "agents": {
+        "lead": "Morpheus",
+        "plugin-dev": "Neo",
+        "frontend-dev": "Trinity",
+        "technical-writer": "Mouse"
+      },
+      "created_at": "2026-03-27T19:38:35.747Z"
+    }
+  }
+}

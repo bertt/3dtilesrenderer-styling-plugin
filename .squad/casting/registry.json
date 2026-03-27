@@ -1,0 +1,46 @@
+{
+  "agents": {
+    "lead": {
+      "persistent_name": "Morpheus",
+      "universe": "The Matrix",
+      "created_at": "2026-03-27T19:38:35.747Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "plugin-dev": {
+      "persistent_name": "Neo",
+      "universe": "The Matrix",
+      "created_at": "2026-03-27T19:38:35.747Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "frontend-dev": {
+      "persistent_name": "Trinity",
+      "universe": "The Matrix",
+      "created_at": "2026-03-27T19:38:35.747Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "technical-writer": {
+      "persistent_name": "Mouse",
+      "universe": "The Matrix",
+      "created_at": "2026-03-27T19:38:35.747Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "scribe": {
+      "persistent_name": "Scribe",
+      "universe": null,
+      "created_at": "2026-03-27T19:38:35.747Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    "ralph": {
+      "persistent_name": "Ralph",
+      "universe": null,
+      "created_at": "2026-03-27T19:38:35.747Z",
+      "legacy_named": false,
+      "status": "active"
+    }
+  }
+}

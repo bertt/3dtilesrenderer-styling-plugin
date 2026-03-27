@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sibbe - BAG Buildings</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+    }
+    
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
+    
+    .overlay {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 1;
+    }
+    
+    .title {
+      top: 20px;
+      left: 20px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+    
+    .legend {
+      bottom: 30px;
+      left: 20px;
+      min-width: 180px;
+    }
+    
+    .legend h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    
+    .legend-color {
+      width: 24px;
+      height: 18px;
+      margin-right: 10px;
+      border-radius: 2px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .legend-label {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  
+  <div class="overlay title">
+    Sibbe - BAG Buildings
+  </div>
+  
+  <div class="overlay legend">
+    <h3>Building Height</h3>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #1a1a2e;"></div>
+      <div class="legend-label">0-5m</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #16213e;"></div>
+      <div class="legend-label">5-10m</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #0f3460;"></div>
+      <div class="legend-label">10-15m</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #533483;"></div>
+      <div class="legend-label">15-20m</div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #e94560;"></div>
+      <div class="legend-label">&gt;20m</div>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://esm.sh/three@0.177.0",
+      "three/addons/": "https://esm.sh/three@0.177.0/addons/",
+      "3d-tiles-renderer": "https://esm.sh/3d-tiles-renderer@0.3.41",
+      "3d-tiles-renderer/three": "https://esm.sh/3d-tiles-renderer@0.3.41/three",
+      "3d-tiles-renderer/plugins": "https://esm.sh/3d-tiles-renderer@0.3.41/plugins",
+      "3d-tiles-renderer/three/plugins": "https://esm.sh/3d-tiles-renderer@0.3.41/three/plugins"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import maplibregl from 'https://esm.sh/maplibre-gl@4.7.1';
+    import * as THREE from 'three';
+    import { TilesRenderer } from '3d-tiles-renderer';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+    import { GLTFMeshFeaturesExtension, GLTFStructuralMetadataExtension, GLTFCesiumRTCExtension } from '3d-tiles-renderer/plugins';
+    import { CesiumStylingPlugin } from '../../src/CesiumStylingPlugin.js';
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://tiles.openfreemap.org/styles/liberty',
+      center: [5.83, 50.85],
+      zoom: 15,
+      pitch: 55,
+      bearing: 0,
+      antialias: true
+    });
+
+    const tilesLayer = {
+      id: '3d-tiles',
+      type: 'custom',
+      renderingMode: '3d',
+      
+      onAdd(map, gl) {
+        this.renderer = new THREE.WebGLRenderer({
+          canvas: map.getCanvas(),
+          context: gl,
+          antialias: true
+        });
+        this.renderer.autoClear = false;
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera();
+        
+        this.tiles = new TilesRenderer('./tileset.json');
+        
+        const loader = new GLTFLoader(this.tiles.manager);
+        loader.register(() => new GLTFMeshFeaturesExtension());
+        loader.register(() => new GLTFStructuralMetadataExtension());
+        loader.register(() => new GLTFCesiumRTCExtension());
+        
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+        loader.setDRACOLoader(dracoLoader);
+        
+        this.tiles.manager.addHandler(/\.glb$/, loader);
+        
+        this.tiles.registerPlugin(new CesiumStylingPlugin({
+          style: {
+            color: {
+              conditions: [
+                ["${feature['height']} <= 5", "color('#1a1a2e')"],
+                ["${feature['height']} <= 10", "color('#16213e')"],
+                ["${feature['height']} <= 15", "color('#0f3460')"],
+                ["${feature['height']} <= 20", "color('#533483')"],
+                ["${feature['height']} > 20", "color('#e94560')"],
+                ["true", "color('#ffffff')"]
+              ]
+            }
+          }
+        }));
+        
+        this.scene.add(this.tiles.group);
+        
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        this.scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(0.5, 1, 0.5).normalize();
+        this.scene.add(directionalLight);
+      },
+      
+      render(gl, matrix) {
+        const l = new THREE.Matrix4().fromArray(matrix);
+        this.camera.projectionMatrix = l;
+        this.camera.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert();
+        
+        this.renderer.resetState();
+        this.tiles.setCamera(this.camera);
+        this.tiles.setResolutionFromRenderer(this.camera, this.renderer);
+        this.tiles.update();
+        
+        this.renderer.render(this.scene, this.camera);
+        map.triggerRepaint();
+      }
+    };
+
+    map.on('load', () => {
+      map.addLayer(tilesLayer);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "name": "@bertt/3dtilesrenderer-styling-plugin",
+  "version": "0.1.0",
+  "description": "Cesium 3D Tiles Styling Specification plugin for 3DTilesRendererJS",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.js"
+    }
+  },
+  "type": "module",
+  "files": [
+    "src/"
+  ],
+  "keywords": [
+    "3dtiles",
+    "3d-tiles",
+    "three.js",
+    "gis",
+    "maplibre",
+    "styling",
+    "cesium"
+  ],
+  "author": "Bert Temme",
+  "license": "MIT",
+  "peerDependencies": {
+    "three": ">=0.150.0",
+    "3d-tiles-renderer": ">=0.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bertt/3dtilesrenderer-styling-plugin.git"
+  }
+}

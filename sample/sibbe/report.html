@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Tiles Styling Plugin — Sibbe Sample</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f9f9f9;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 16px;
+    }
+    
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #16213e;
+      margin-top: 32px;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #0f3460;
+      padding-bottom: 8px;
+    }
+    
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #533483;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+    
+    p {
+      margin-bottom: 16px;
+      color: #555;
+    }
+    
+    .description {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 24px;
+    }
+    
+    .viewer-embed {
+      margin: 32px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      display: block;
+    }
+    
+    pre {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    
+    code {
+      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      background-color: #f5f5f5;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    
+    pre code {
+      background: none;
+      padding: 0;
+    }
+    
+    ul {
+      margin: 16px 0;
+      padding-left: 24px;
+    }
+    
+    li {
+      margin-bottom: 8px;
+      color: #555;
+    }
+    
+    a {
+      color: #0f3460;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    
+    a:hover {
+      border-bottom-color: #0f3460;
+    }
+    
+    .links {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #eee;
+    }
+    
+    .links a {
+      display: inline-block;
+      margin-right: 20px;
+      font-weight: 500;
+    }
+    
+    .info-box {
+      background-color: #f0f4f8;
+      border-left: 4px solid #0f3460;
+      padding: 16px;
+      margin: 24px 0;
+      border-radius: 4px;
+    }
+    
+    .info-box p {
+      margin-bottom: 8px;
+    }
+    
+    .info-box p:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>3D Tiles Styling Plugin — Sibbe Sample</h1>
+    
+    <p class="description">
+      This sample demonstrates the <strong>CesiumStylingPlugin</strong> for 3DTilesRendererJS, 
+      which enables Cesium 3D Tiles Styling specification for coloring and styling 3D Tiles 
+      based on feature properties.
+    </p>
+
+    <h2>Live Viewer</h2>
+    <p>
+      The viewer below displays BAG (Basisregistratie Adressen en Gebouwen) buildings in Sibbe, 
+      Limburg, Netherlands, colored by building height using a gradient from dark navy to vivid rose.
+    </p>
+    
+    <div class="viewer-embed">
+      <iframe src="./index.html" title="Sibbe 3D Buildings Viewer"></iframe>
+    </div>
+
+    <h2>About This Sample</h2>
+    
+    <h3>Styling Configuration</h3>
+    <p>
+      The plugin uses the <code>height</code> property from each building feature to apply 
+      a color gradient. The style configuration uses Cesium's conditional styling syntax:
+    </p>
+    
+    <pre><code>{
+  style: {
+    color: {
+      conditions: [
+        ["${feature['height']} &lt;= 5", "color('#1a1a2e')"],   // Deep navy (0-5m)
+        ["${feature['height']} &lt;= 10", "color('#16213e')"],  // Dark blue (5-10m)
+        ["${feature['height']} &lt;= 15", "color('#0f3460')"],  // Medium blue (10-15m)
+        ["${feature['height']} &lt;= 20", "color('#533483')"],  // Purple (15-20m)
+        ["${feature['height']} &gt; 20", "color('#e94560')"],   // Vivid rose (&gt;20m)
+        ["true", "color('#ffffff')"]                      // Fallback white
+      ]
+    }
+  }
+}</code></pre>
+
+    <div class="info-box">
+      <h3>Dataset Information</h3>
+      <p><strong>Source:</strong> pg2b3dm tool (PostgreSQL to 3D Tiles converter)</p>
+      <p><strong>Data:</strong> BAG buildings in Limburg, Netherlands (Sibbe area)</p>
+      <p><strong>Tiling:</strong> Implicit QUADTREE with 3 GLB content files</p>
+      <p><strong>Properties:</strong></p>
+      <ul>
+        <li><code>identificatie</code> — Building ID (string)</li>
+        <li><code>height</code> — Building height in meters (double)</li>
+      </ul>
+    </div>
+
+    <h3>Technical Stack</h3>
+    <ul>
+      <li><strong>MapLibre GL JS:</strong> Base map rendering and camera control</li>
+      <li><strong>Three.js:</strong> 3D graphics rendering engine</li>
+      <li><strong>3DTilesRendererJS:</strong> 3D Tiles loader and renderer</li>
+      <li><strong>CesiumStylingPlugin:</strong> Feature-based styling using Cesium 3D Tiles Styling spec</li>
+    </ul>
+
+    <h3>How It Works</h3>
+    <p>
+      The plugin registers as a 3DTilesRendererJS plugin and applies material overrides to 
+      each mesh based on feature metadata. The styling expressions are evaluated per-feature 
+      using the EXT_mesh_features and EXT_structural_metadata glTF extensions.
+    </p>
+    <p>
+      Required GLTF loader extensions:
+    </p>
+    <ul>
+      <li><code>GLTFMeshFeaturesExtension</code> — Parses mesh-level feature IDs</li>
+      <li><code>GLTFStructuralMetadataExtension</code> — Parses feature property tables</li>
+      <li><code>GLTFCesiumRTCExtension</code> — Handles relative-to-center positioning</li>
+    </ul>
+
+    <div class="links">
+      <h2>Resources</h2>
+      <a href="https://github.com/bertt/3dtilesrenderer-styling-plugin" target="_blank">GitHub Repository</a>
+      <a href="https://www.npmjs.com/package/@bertt/3dtilesrenderer-styling-plugin" target="_blank">npm Package</a>
+      <a href="https://github.com/Geodan/pg2b3dm" target="_blank">pg2b3dm Tool</a>
+      <a href="https://github.com/CesiumGS/3d-tiles/tree/main/specification/Styling" target="_blank">Cesium 3D Tiles Styling Spec</a>
+    </div>
+  </div>
+</body>
+</html>
